@@ -33,7 +33,7 @@ public class SwiftEntityStoreTest extends AbstractEntityStoreTest
         super.assemble( module );
         module.addServices( SwiftEntityStoreService.class, UuidIdentityGeneratorService.class );
 
-        ModuleAssembly config = module.layerAssembly().moduleAssembly( "config" );
+        ModuleAssembly config = module.layer().module( "config" );
         config.addEntities( SwiftConfiguration.class ).visibleIn( Visibility.layer );
         config.addServices( MemoryEntityStoreService.class );
     }

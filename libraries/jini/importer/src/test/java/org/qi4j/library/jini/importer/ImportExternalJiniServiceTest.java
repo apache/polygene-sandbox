@@ -50,7 +50,7 @@ public class ImportExternalJiniServiceTest
         {
             public void assemble( ModuleAssembly module ) throws AssemblyException
             {
-                module.importServices( InterpreterService.class ).importedBy( JiniImporter.class );
+                module.importedServices( InterpreterService.class ).importedBy( JiniImporter.class );
             }
         };
         final ServiceFinder finder = assembler.serviceFinder();

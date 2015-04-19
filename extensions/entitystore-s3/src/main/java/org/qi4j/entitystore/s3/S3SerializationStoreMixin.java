@@ -92,9 +92,11 @@ public class S3SerializationStoreMixin
     {
         return new Input<Reader, IOException>()
         {
-            public <ReceiverThrowableType extends Throwable> void transferTo( Output<Reader, ReceiverThrowableType> readerReceiverThrowableTypeOutput ) throws IOException, ReceiverThrowableType
+            public <ReceiverThrowableType extends Throwable> void transferTo( Output<? super Reader, ReceiverThrowableType> output )
+                throws IOException, ReceiverThrowableType
             {
                 // TODO Implement this
+                throw new UnsupportedOperationException( "Not supported yet." );
             }
         };
     }

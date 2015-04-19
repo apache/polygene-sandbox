@@ -34,7 +34,7 @@ public abstract class S3EntityStoreTest
         super.assemble( module );
         module.addServices( S3EntityStoreService.class ).instantiateOnStartup();
 
-        ModuleAssembly config = module.layerAssembly().moduleAssembly( "config" );
+        ModuleAssembly config = module.layer().module( "config" );
         config.addEntities( S3Configuration.class ).visibleIn( Visibility.layer );
         config.addServices( MemoryEntityStoreService.class );
     }

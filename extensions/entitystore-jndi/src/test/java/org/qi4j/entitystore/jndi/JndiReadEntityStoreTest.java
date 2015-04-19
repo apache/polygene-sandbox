@@ -37,14 +37,15 @@ public class JndiReadEntityStoreTest extends AbstractQi4jTest
     public void assemble( ModuleAssembly module ) throws AssemblyException
     {
         module.addServices( JndiEntityStoreService.class, UuidIdentityGeneratorService.class );
-        ModuleAssembly config = module.layerAssembly().moduleAssembly( "config" );
-        config.addEntities( JndiConfiguration.class ).visibleIn( Visibility.layer );
-        config.addServices( MemoryEntityStoreService.class );
+        ModuleAssembly config = module.layer().module( "config" );
+        config.entities( JndiConfiguration.class ).visibleIn( Visibility.layer );
+        config.services( MemoryEntityStoreService.class );
 
-        module.addEntities( UserEntity.class, GroupEntity.class );
+        module.entities( UserEntity.class, GroupEntity.class );
     }
 
     @Test
+    @Ignore( "Requires connection to LDAP server on OPS4J that is now unavailable" )
     public void findSaslSupportTypes()
         throws Exception
     {

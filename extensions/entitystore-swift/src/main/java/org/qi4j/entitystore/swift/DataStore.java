@@ -390,42 +390,39 @@ public class DataStore
     {
         return new Input<Reader, IOException>()
         {
-            public <ReceiverThrowableType extends Throwable> void transferTo( Output<Reader, ReceiverThrowableType> output ) throws IOException, ReceiverThrowableType
+            public <ReceiverThrowableType extends Throwable> void transferTo( Output<? super Reader, ReceiverThrowableType> output )
+                throws IOException, ReceiverThrowableType
             {
-                output.receiveFrom( new Sender<Reader, IOException>()
-                {
-                    public <ReceiverThrowableType extends Throwable> void sendTo( Receiver<Reader, ReceiverThrowableType> receiver ) throws ReceiverThrowableType, IOException
+                output.receiveFrom(
+                    new Sender<Reader, IOException>()
                     {
-                        try
+                        public <ReceiverThrowableType extends Throwable> void sendTo( Receiver<? super Reader, ReceiverThrowableType> receiver )
+                        throws ReceiverThrowableType, IOException
                         {
                             long position = DATA_AREA_OFFSET;
-                            while (position < dataFile.length())
+                            while( position < dataFile.length() )
                             {
                                 dataFile.seek( position );
                                 int blockSize = dataFile.readInt();
-                                if (blockSize == -1) // EOF marker
+                                if( blockSize == -1 ) // EOF marker
                                 {
                                     return;
                                 }
-                                if (blockSize == 0)
+                                if( blockSize == 0 )
                                 {
                                     // TODO This is a bug. Why does it occur??
                                     throw new InternalError();
                                 }
                                 position = position + blockSize;  // position for next round...
                                 DataBlock block = readDataBlock( null );
-                                if (block != null)
+                                if( block != null )
                                 {
                                     receiver.receive( new StringReader( new String( block.data, "UTF-8" ) ) );
                                 }
                             }
                         }
-                        catch (IOException e)
-                        {
-                            throw new EntityStoreException( e );
-                        }
                     }
-                });
+                );
             }
         };
     }

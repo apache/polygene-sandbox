@@ -76,18 +76,22 @@ public class JGroupsEntityStoreMixin
     {
         return new Input<Reader, IOException>()
         {
-            public <ReceiverThrowableType extends Throwable> void transferTo( Output<Reader, ReceiverThrowableType> output ) throws IOException, ReceiverThrowableType
+            public <ReceiverThrowableType extends Throwable> void transferTo( Output<? super Reader, ReceiverThrowableType> output )
+                throws IOException, ReceiverThrowableType
             {
-                output.receiveFrom( new Sender<Reader, IOException>()
-                {
-                    public <ReceiverThrowableType extends Throwable> void sendTo( Receiver<Reader, ReceiverThrowableType> receiver ) throws ReceiverThrowableType, IOException
+                output.receiveFrom(
+                    new Sender<Reader, IOException>()
                     {
-                        for (String json : replicatedMap.values())
+                        public <ReceiverThrowableType extends Throwable> void sendTo( Receiver<? super Reader, ReceiverThrowableType> receiver )
+                        throws ReceiverThrowableType, IOException
                         {
-                            receiver.receive( new StringReader(json) );
+                            for( String json : replicatedMap.values() )
+                            {
+                                receiver.receive( new StringReader( json ) );
+                            }
                         }
                     }
-                } );
+                );
             }
         };
     }

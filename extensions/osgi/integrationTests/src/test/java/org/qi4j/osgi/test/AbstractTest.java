@@ -51,7 +51,7 @@ public abstract class AbstractTest
     @Configuration
     public final Option[] baseProvision()
     {
-        String qi4jVersion = System.getProperty( "version.qi4j", "1.0-SNAPSHOT" );
+        String qi4jVersion = System.getProperty( "version.qi4j", "1.0" );
 
         return options( provision(
             "mvn:org.ops4j.pax.logging/pax-logging-api@2",

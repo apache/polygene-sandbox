@@ -4,9 +4,9 @@
   <parent>
     <groupId>org.qi4j.sandbox</groupId>
     <artifactId>qi4j-sandbox</artifactId>
-    <version>1.3-SNAPSHOT</version>
+    <version>0-SNAPSHOT</version>
   </parent>
-  <artifactId>sb-libraries-root</artifactId>
+  <artifactId>qi4j-sandbox-libraries</artifactId>
   <name>Qi4j Sandbox Libraries - Build POM</name>
   <packaging>pom</packaging>
 
@@ -15,7 +15,6 @@
       <module>entityproxy</module>
       <module>exception</module>
       <module>executor</module>
-      <module>jini</module>
       <module>ldap</module>
       <module>observations</module>
       <module>registry</module>
@@ -23,5 +22,11 @@
       <module>thread</module>
       <module>unitofwork</module>
       <module>validation</module>
+
+      <!-- Depends on incubator release of Apache River.
+           Could not find a repository with the correct JARs.
+           Unable to make it compile against Apache River TLP artifacts.
+      <module>jini</module> -->
+
   </modules>
 </project>

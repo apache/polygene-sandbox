@@ -37,7 +37,7 @@ public class SwiftEntityStoreAssembler
     public void assemble( ModuleAssembly module ) throws AssemblyException
     {
         module.addServices( SwiftEntityStoreService.class, UuidIdentityGeneratorService.class );
-        ModuleAssembly config = module.layerAssembly().moduleAssembly( configurationModuleName );
+        ModuleAssembly config = module.layer().module( configurationModuleName );
         config.addEntities( SwiftConfiguration.class ).visibleIn( Visibility.layer );
         config.addServices( MemoryEntityStoreService.class );
     }

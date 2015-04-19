@@ -118,9 +118,11 @@ public class JndiEntityStoreMixin
     {
         return new Input<EntityState, EntityStoreException>()
         {
-            public <ReceiverThrowableType extends Throwable> void transferTo( Output<EntityState, ReceiverThrowableType> entityStateReceiverThrowableTypeOutput ) throws EntityStoreException, ReceiverThrowableType
+            public <ReceiverThrowableType extends Throwable> void transferTo( Output<? super EntityState, ReceiverThrowableType> output )
+                throws EntityStoreException, ReceiverThrowableType
             {
                 // TODO Actual iteration
+                throw new UnsupportedOperationException( "Not implemented yet!" );
             }
         };
     }
