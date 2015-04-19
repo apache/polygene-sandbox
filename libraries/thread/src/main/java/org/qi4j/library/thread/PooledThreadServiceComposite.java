@@ -18,9 +18,9 @@
 package org.qi4j.library.thread;
 
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.service.ServiceComposite;
+import org.qi4j.api.service.ServiceActivation;
 
 @Mixins( PooledThreadServiceMixin.class )
-public interface PooledThreadServiceComposite extends ThreadService, ServiceComposite
+public interface PooledThreadServiceComposite extends ThreadService, ServiceActivation
 {
 }

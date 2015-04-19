@@ -6,9 +6,11 @@ import org.apache.thrift.transport.TTransportException;
 import org.junit.BeforeClass;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
-import org.qi4j.core.testsupport.AbstractEntityStoreTest;
+import org.qi4j.test.entity.AbstractEntityStoreTest;
 
 import java.io.IOException;
+import org.qi4j.api.value.ValueSerialization;
+import org.qi4j.valueserialization.orgjson.OrgJsonValueSerializationService;
 
 
 //need to launch a cassandra instance b4 running this test...
@@ -23,6 +25,7 @@ public class CassandraEntityStoreTest extends AbstractEntityStoreTest {
       super.assemble(module);
       module.addServices(CassandraEntityStoreService.class,
                          CassandraConfigurationService.class);
+      module.services( OrgJsonValueSerializationService.class ).taggedWith( ValueSerialization.Formats.JSON );
    }
 
    @BeforeClass

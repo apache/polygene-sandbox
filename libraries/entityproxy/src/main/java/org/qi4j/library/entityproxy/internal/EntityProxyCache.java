@@ -17,11 +17,11 @@ package org.qi4j.library.entityproxy.internal;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.qi4j.api.service.Activatable;
+import org.qi4j.api.service.ServiceActivation;
 import org.qi4j.library.constraints.annotation.GreaterThan;
 import org.qi4j.library.entityproxy.EntityProxy;
 
-public interface EntityProxyCache
+public interface EntityProxyCache extends ServiceActivation
 {
     public EntityProxy getFromCache(String entityID);
 
@@ -35,7 +35,7 @@ public interface EntityProxyCache
 
     public void setMaxCacheSize(@GreaterThan(0) Integer newSize);
 
-   public abstract class EntityProxyUtilsMixin implements EntityProxyCache, Activatable
+   public abstract class EntityProxyUtilsMixin implements EntityProxyCache
    {
 
       private static final Integer DEFAULT_MAX_PROXIES = 1000;
@@ -45,14 +45,14 @@ public interface EntityProxyCache
       private Integer _maxProxies;
 
       @Override
-      public void activate() throws Exception
+      public void activateService() throws Exception
       {
          this._maxProxies = DEFAULT_MAX_PROXIES;
          this._entityProxyMapping = new LinkedHashMap<String, EntityProxy>(this._maxProxies);
       }
 
       @Override
-      public void passivate() throws Exception
+      public void passivateService() throws Exception
       {
       }
 

@@ -17,13 +17,14 @@
  */
 package org.qi4j.entitystore.swift;
 
-import org.junit.Ignore;
 import org.qi4j.api.common.Visibility;
+import org.qi4j.api.value.ValueSerialization;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
-import org.qi4j.entitystore.memory.MemoryEntityStoreService;
-import org.qi4j.core.testsupport.AbstractEntityStoreTest;
+import org.qi4j.test.entity.AbstractEntityStoreTest;
 import org.qi4j.spi.uuid.UuidIdentityGeneratorService;
+import org.qi4j.test.EntityTestAssembler;
+import org.qi4j.valueserialization.orgjson.OrgJsonValueSerializationService;
 
 public class SwiftEntityStoreTest extends AbstractEntityStoreTest
 {
@@ -31,11 +32,12 @@ public class SwiftEntityStoreTest extends AbstractEntityStoreTest
         throws AssemblyException
     {
         super.assemble( module );
-        module.addServices( SwiftEntityStoreService.class, UuidIdentityGeneratorService.class );
+        module.services( SwiftEntityStoreService.class, UuidIdentityGeneratorService.class );
+        module.services( OrgJsonValueSerializationService.class ).taggedWith( ValueSerialization.Formats.JSON );
 
         ModuleAssembly config = module.layer().module( "config" );
-        config.addEntities( SwiftConfiguration.class ).visibleIn( Visibility.layer );
-        config.addServices( MemoryEntityStoreService.class );
+        config.entities( SwiftConfiguration.class ).visibleIn( Visibility.layer );
+        new EntityTestAssembler().assemble( config );
     }
 
 }

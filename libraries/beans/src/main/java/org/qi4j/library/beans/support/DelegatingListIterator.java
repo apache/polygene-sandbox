@@ -17,19 +17,19 @@
  */
 package org.qi4j.library.beans.support;
 
-import org.qi4j.api.entity.association.AssociationInfo;
 import org.qi4j.api.composite.TransientBuilderFactory;
 
 import java.util.ListIterator;
+import org.qi4j.api.association.AssociationDescriptor;
 
 public class DelegatingListIterator
     implements ListIterator
 {
     private ListIterator source;
-    private final AssociationInfo info;
+    private final AssociationDescriptor info;
     private final TransientBuilderFactory cbf;
 
-    public DelegatingListIterator( ListIterator source, AssociationInfo info, TransientBuilderFactory cbf )
+    public DelegatingListIterator( ListIterator source, AssociationDescriptor info, TransientBuilderFactory cbf )
     {
         this.source = source;
         this.info = info;

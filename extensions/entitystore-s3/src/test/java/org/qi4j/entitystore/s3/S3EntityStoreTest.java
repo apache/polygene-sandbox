@@ -21,7 +21,7 @@ import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.entitystore.memory.MemoryEntityStoreService;
-import org.qi4j.core.testsupport.AbstractEntityStoreTest;
+import org.qi4j.test.entity.AbstractEntityStoreTest;
 
 /**
  * Amazon S3 EntityStore test
@@ -35,8 +35,8 @@ public abstract class S3EntityStoreTest
         module.addServices( S3EntityStoreService.class ).instantiateOnStartup();
 
         ModuleAssembly config = module.layer().module( "config" );
-        config.addEntities( S3Configuration.class ).visibleIn( Visibility.layer );
-        config.addServices( MemoryEntityStoreService.class );
+        config.entities( S3Configuration.class ).visibleIn( Visibility.layer );
+        config.services( MemoryEntityStoreService.class );
     }
 
     @Test

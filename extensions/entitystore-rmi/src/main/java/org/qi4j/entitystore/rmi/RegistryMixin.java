@@ -3,7 +3,7 @@ package org.qi4j.entitystore.rmi;
 import org.qi4j.api.common.AppliesTo;
 import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.injection.scope.This;
-import org.qi4j.api.service.Activatable;
+import org.qi4j.api.service.ServiceActivation;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -15,19 +15,19 @@ import java.rmi.server.UnicastRemoteObject;
 /**
  * Create and delegate to a RMI registry.
  */
-@AppliesTo( { Registry.class, Activatable.class } )
+@AppliesTo( { Registry.class, ServiceActivation.class } )
 public class RegistryMixin
-    implements InvocationHandler, Activatable
+    implements InvocationHandler, ServiceActivation
 {
     Registry registry;
 
     @This Configuration<RegistryConfiguration> config;
 
-    public void activate() throws Exception
+    public void activateService() throws Exception
     {
         try
         {
-            Integer port = config.configuration().port().get();
+            Integer port = config.get().port().get();
             registry = LocateRegistry.createRegistry( port );
         }
         catch( RemoteException e )
@@ -36,7 +36,7 @@ public class RegistryMixin
         }
     }
 
-    public void passivate() throws Exception
+    public void passivateService() throws Exception
     {
         for( String boundService : registry.list() )
         {

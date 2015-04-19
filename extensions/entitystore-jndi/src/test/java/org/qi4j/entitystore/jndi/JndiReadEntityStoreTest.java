@@ -24,22 +24,25 @@ import org.qi4j.api.common.Visibility;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
-import org.qi4j.entitystore.memory.MemoryEntityStoreService;
 import org.qi4j.spi.uuid.UuidIdentityGeneratorService;
 import org.qi4j.test.AbstractQi4jTest;
 
 import javax.naming.directory.Attributes;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
+import org.qi4j.api.value.ValueSerialization;
+import org.qi4j.test.EntityTestAssembler;
+import org.qi4j.valueserialization.orgjson.OrgJsonValueSerializationService;
 
 public class JndiReadEntityStoreTest extends AbstractQi4jTest
 {
     public void assemble( ModuleAssembly module ) throws AssemblyException
     {
-        module.addServices( JndiEntityStoreService.class, UuidIdentityGeneratorService.class );
+        module.services( JndiEntityStoreService.class, UuidIdentityGeneratorService.class );
+        module.services( OrgJsonValueSerializationService.class ).taggedWith( ValueSerialization.Formats.JSON );
         ModuleAssembly config = module.layer().module( "config" );
         config.entities( JndiConfiguration.class ).visibleIn( Visibility.layer );
-        config.services( MemoryEntityStoreService.class );
+        new EntityTestAssembler().assemble( config );
 
         module.entities( UserEntity.class, GroupEntity.class );
     }
@@ -64,7 +67,7 @@ public class JndiReadEntityStoreTest extends AbstractQi4jTest
     public void testReadNiclasFromLdap()
         throws Exception
     {
-        UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
+        UnitOfWork uow = module.newUnitOfWork();
         try
         {
             User user = uow.get( User.class, "niclas.hedhman" );

@@ -18,7 +18,7 @@
 package org.qi4j.entitystore.swift;
 
 import org.qi4j.api.entity.EntityReference;
-import org.qi4j.api.io.Input;
+import org.qi4j.io.Input;
 import org.qi4j.spi.entitystore.EntityStoreException;
 
 import java.io.File;

@@ -26,17 +26,20 @@ import java.util.Arrays;
 import java.util.List;
 import org.qi4j.api.composite.TransientBuilder;
 import org.qi4j.api.composite.TransientBuilderFactory;
-import org.qi4j.api.property.ComputedPropertyInstance;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.property.PropertyDescriptor;
 
-public class JavabeanProperty extends ComputedPropertyInstance
+public class JavabeanProperty implements Property
 {
-    private Method pojoMethod;
-    private JavabeanMixin javabeanMixin;
+    private final JavabeanMixin javabeanMixin;
+    private final PropertyDescriptor descriptor;
+    private final Method pojoMethod;
 
-    public JavabeanProperty( JavabeanMixin javabeanMixin, Method qi4jPropertyMethod )
+    public JavabeanProperty( JavabeanMixin javabeanMixin, PropertyDescriptor descriptor, Method pojoMethod )
     {
-        super( qi4jPropertyMethod );
         this.javabeanMixin = javabeanMixin;
+        this.descriptor = descriptor;
+        this.pojoMethod = pojoMethod;
     }
 
     public Object get()
@@ -62,7 +65,7 @@ public class JavabeanProperty extends ComputedPropertyInstance
         {
             return null;
         }
-        Type type = type();
+        Type type = descriptor.type();
         if( type instanceof Class )
         {
             Class clazz = (Class) type;
@@ -112,8 +115,9 @@ public class JavabeanProperty extends ComputedPropertyInstance
         return resultObject;
     }
 
-    void setPojoMethod( Method pojoMethod )
+    public void set( Object newValue )
+        throws IllegalArgumentException, IllegalStateException
     {
-        this.pojoMethod = pojoMethod;
+        //TODO: Auto-generated, need attention.
     }
 }

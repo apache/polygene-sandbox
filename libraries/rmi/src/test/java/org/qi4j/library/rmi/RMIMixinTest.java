@@ -34,7 +34,7 @@ public class RMIMixinTest
     public void assemble( ModuleAssembly module )
         throws AssemblyException
     {
-        module.addTransients( RemoteInterfaceComposite.class );
+        module.transients( RemoteInterfaceComposite.class );
     }
 
     @Test
@@ -47,7 +47,7 @@ public class RMIMixinTest
         Registry registry = LocateRegistry.createRegistry( 1099 );
         registry.rebind( RemoteInterface.class.getSimpleName(), stub );
 
-        RemoteInterface remote = transientBuilderFactory.newTransient( RemoteInterfaceComposite.class );
+        RemoteInterface remote = module.newTransient( RemoteInterfaceComposite.class );
 
         // MethodCallExpression remote interface
         System.out.println( remote.foo( "Bar" ) );

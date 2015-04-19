@@ -17,58 +17,53 @@
  */
 package org.qi4j.library.beans.support;
 
-import org.qi4j.api.common.MetaInfo;
 import org.qi4j.api.common.QualifiedName;
-import org.qi4j.api.entity.association.Association;
-import org.qi4j.api.entity.association.GenericAssociationInfo;
+import org.qi4j.api.association.Association;
 import org.qi4j.api.composite.TransientBuilder;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.lang.reflect.UndeclaredThrowableException;
+import org.qi4j.api.association.AssociationDescriptor;
 
 public class JavabeanAssociation
     implements Association
 {
-    public Method pojoMethod;
-    private GenericAssociationInfo delegate;
-    private JavabeanMixin javabeanMixin;
+    private final JavabeanMixin javabeanMixin;
+    private final AssociationDescriptor descriptor;
+    public final Method pojoMethod;
 
-    public JavabeanAssociation( JavabeanMixin javabeanMixin, Method method )
+    public JavabeanAssociation( JavabeanMixin javabeanMixin, AssociationDescriptor descriptor, Method pojoMethod )
     {
         this.javabeanMixin = javabeanMixin;
-        delegate = new GenericAssociationInfo( method, new MetaInfo() );
-    }
-
-    void setPojoMethod( Method pojoMethod )
-    {
+        this.descriptor = descriptor;
         this.pojoMethod = pojoMethod;
     }
 
     public <T> T metaInfo( Class<T> infoType )
     {
-        return delegate.metaInfo( infoType );
+        return descriptor.metaInfo( infoType );
     }
 
     public QualifiedName qualifiedName()
     {
-        return delegate.qualifiedName();
+        return descriptor.qualifiedName();
     }
 
     public Type type()
     {
-        return delegate.type();
+        return descriptor.type();
     }
 
     public boolean isImmutable()
     {
-        return delegate.isImmutable();
+        return descriptor.isImmutable();
     }
 
     public boolean isAggregated()
     {
-        return delegate.isAggregated();
+        return descriptor.isAggregated();
     }
 
     public Object get()
@@ -98,6 +93,5 @@ public class JavabeanAssociation
     public void set( Object associated ) throws IllegalArgumentException
     {
         //TODO: Auto-generated, need attention.
-
     }
 }

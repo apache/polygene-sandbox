@@ -23,11 +23,10 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.junit.Ignore;
 import org.qi4j.api.common.Optional;
-import org.qi4j.api.composite.Composite;
 import org.qi4j.api.composite.TransientComposite;
 import org.qi4j.api.composite.TransientBuilder;
-import org.qi4j.api.entity.association.Association;
-import org.qi4j.api.entity.association.ManyAssociation;
+import org.qi4j.api.association.Association;
+import org.qi4j.api.association.ManyAssociation;
 import org.qi4j.api.property.Property;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
@@ -43,7 +42,7 @@ public class JavabeanBackedTest extends AbstractQi4jTest
 
     public void assemble( ModuleAssembly module ) throws AssemblyException
     {
-        module.addTransients( PersonComposite.class, CountryComposite.class, CityComposite.class );
+        module.transients( PersonComposite.class, CountryComposite.class, CityComposite.class );
     }
 
     @Test
@@ -76,7 +75,7 @@ public class JavabeanBackedTest extends AbstractQi4jTest
         friendsNiclas.add( makasPojo );
         friendsNiclas.add( edwardPojo );
 
-        TransientBuilder<Person> builder = transientBuilderFactory.newTransientBuilder( Person.class );
+        TransientBuilder<Person> builder = module.newTransientBuilder( Person.class );
         builder.use( niclasPojo );
         Person niclas = builder.newInstance();
         Property<String> stringProperty = niclas.name();

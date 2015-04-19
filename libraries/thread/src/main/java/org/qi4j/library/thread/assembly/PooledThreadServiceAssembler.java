@@ -32,10 +32,10 @@ public class PooledThreadServiceAssembler
     public void assemble( ModuleAssembly module )
         throws AssemblyException
     {
-        module.addServices( PooledThreadServiceComposite.class );
-        module.addServices( ThreadGroupServiceComposite.class );
-        module.addEntities( ThreadServiceConfigurationEntity.class );
-        module.addEntities( ThreadGroupConfigurationEntity.class );
+        module.services( PooledThreadServiceComposite.class );
+        module.services( ThreadGroupServiceComposite.class );
+        module.entities( ThreadServiceConfigurationEntity.class );
+        module.entities( ThreadGroupConfigurationEntity.class );
         new TransientSequencingAssembler().assemble( module );
     }
 }

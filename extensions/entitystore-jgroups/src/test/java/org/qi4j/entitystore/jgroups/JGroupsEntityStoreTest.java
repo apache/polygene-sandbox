@@ -21,13 +21,14 @@ package org.qi4j.entitystore.jgroups;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
+
 import org.junit.Test;
 import org.junit.Ignore;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.entity.EntityComposite;
-import org.qi4j.api.entity.association.Association;
-import org.qi4j.api.entity.association.ManyAssociation;
+import org.qi4j.api.association.Association;
+import org.qi4j.api.association.ManyAssociation;
 import org.qi4j.api.property.Immutable;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.unitofwork.NoSuchEntityException;
@@ -35,11 +36,13 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueComposite;
+import org.qi4j.api.value.ValueSerialization;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.bootstrap.SingletonAssembler;
 import org.qi4j.spi.uuid.UuidIdentityGeneratorService;
 import org.qi4j.test.AbstractQi4jTest;
+import org.qi4j.valueserialization.orgjson.OrgJsonValueSerializationService;
 
 /**
  * Test of JGroups EntityStore backend.
@@ -49,10 +52,11 @@ public class JGroupsEntityStoreTest
 {
     public void assemble( ModuleAssembly module ) throws AssemblyException
     {
-        module.addServices( UuidIdentityGeneratorService.class );
-        module.addEntities( TestEntity.class );
-        module.addValues( TestValue.class );
-        module.addServices( JGroupsEntityStoreService.class );
+        module.services( UuidIdentityGeneratorService.class );
+        module.services( OrgJsonValueSerializationService.class ).taggedWith( ValueSerialization.Formats.JSON );
+        module.entities( TestEntity.class );
+        module.values( TestValue.class );
+        module.services( JGroupsEntityStoreService.class );
     }
 
     @Test
@@ -65,8 +69,9 @@ public class JGroupsEntityStoreTest
         {
             public void assemble( ModuleAssembly module ) throws AssemblyException
             {
-                module.addServices( JGroupsEntityStoreService.class, UuidIdentityGeneratorService.class ).instantiateOnStartup();
-                module.addEntities( TestEntity.class );
+                module.services( OrgJsonValueSerializationService.class ).taggedWith( ValueSerialization.Formats.JSON );
+                module.services( JGroupsEntityStoreService.class, UuidIdentityGeneratorService.class ).instantiateOnStartup();
+                module.entities( TestEntity.class );
             }
         };
 
@@ -75,14 +80,15 @@ public class JGroupsEntityStoreTest
         {
             public void assemble( ModuleAssembly module ) throws AssemblyException
             {
-                module.addServices( JGroupsEntityStoreService.class, UuidIdentityGeneratorService.class ).instantiateOnStartup();
-                module.addEntities( TestEntity.class );
+                module.services( OrgJsonValueSerializationService.class ).taggedWith( ValueSerialization.Formats.JSON );
+                module.services( JGroupsEntityStoreService.class, UuidIdentityGeneratorService.class ).instantiateOnStartup();
+                module.entities( TestEntity.class );
             }
         };
 
         // Create entity in app 1
         System.out.println( "Create entity" );
-        UnitOfWork app1Unit = app1.unitOfWorkFactory().newUnitOfWork();
+        UnitOfWork app1Unit = app1.module().newUnitOfWork();
         EntityBuilder<TestEntity> builder = app1Unit.newEntityBuilder( TestEntity.class );
         TestEntity instance = builder.instance();
         instance.name().set( "Foo" );
@@ -93,7 +99,7 @@ public class JGroupsEntityStoreTest
 
         // Find entity in app 2
         System.out.println( "Find entity" );
-        UnitOfWork app2Unit = app2.unitOfWorkFactory().newUnitOfWork();
+        UnitOfWork app2Unit = app2.module().newUnitOfWork();
         instance = app2Unit.get( instance );
 
         System.out.println( instance.name() );
@@ -108,14 +114,14 @@ public class JGroupsEntityStoreTest
     {
         try
         {
-            UnitOfWork unitOfWork = unitOfWorkFactory.newUnitOfWork();
+            UnitOfWork unitOfWork = module.newUnitOfWork();
             try
             {
                 TestEntity instance = createEntity( unitOfWork );
                 unitOfWork.complete();
 
                 // Find entity
-                unitOfWork = unitOfWorkFactory.newUnitOfWork();
+                unitOfWork = module.newUnitOfWork();
                 instance = unitOfWork.get( instance );
 
                 // Check state
@@ -153,7 +159,7 @@ public class JGroupsEntityStoreTest
     public void whenRemovedEntityThenCannotFindEntity()
         throws Exception
     {
-        UnitOfWork unitOfWork = unitOfWorkFactory.newUnitOfWork();
+        UnitOfWork unitOfWork = module.newUnitOfWork();
         try
         {
             TestEntity newInstance = createEntity( unitOfWork );
@@ -161,13 +167,13 @@ public class JGroupsEntityStoreTest
             unitOfWork.complete();
 
             // Remove entity
-            unitOfWork = unitOfWorkFactory.newUnitOfWork();
+            unitOfWork = module.newUnitOfWork();
             TestEntity instance = unitOfWork.get( newInstance );
             unitOfWork.remove( instance );
             unitOfWork.complete();
 
             // Find entity
-            unitOfWork = unitOfWorkFactory.newUnitOfWork();
+            unitOfWork = module.newUnitOfWork();
             try
             {
                 instance = unitOfWork.get( TestEntity.class, identity );
@@ -207,7 +213,7 @@ public class JGroupsEntityStoreTest
         instance.name().set( "Test" );
         instance.association().set( instance );
 
-        ValueBuilder<TestValue> valueBuilder = valueBuilderFactory.newValueBuilder( TestValue.class );
+        ValueBuilder<TestValue> valueBuilder = module.newValueBuilder( TestValue.class );
         TestValue state = valueBuilder.prototype();
         state.someValue().set( "Foo" );
         state.otherValue().set( 5 );

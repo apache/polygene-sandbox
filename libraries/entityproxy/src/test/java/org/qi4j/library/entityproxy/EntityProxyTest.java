@@ -23,14 +23,13 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
-import org.qi4j.entitystore.memory.MemoryEntityStoreService;
 import org.qi4j.library.entityproxy.EntityWithMutualType.EntityCompositeWithMutualType;
 import org.qi4j.library.entityproxy.EntityWithMutualType.EntityProxyWithMutualType;
 import org.qi4j.library.entityproxy.MissingMutualTypeEntity.MissingMutualTypeEntityComposite;
 import org.qi4j.library.entityproxy.MissingMutualTypeEntity.MissingMutualTypeEntityProxy;
 import org.qi4j.library.entityproxy.assembling.EntityProxyAssembler;
-import org.qi4j.spi.uuid.UuidIdentityGeneratorService;
 import org.qi4j.test.AbstractQi4jTest;
+import org.qi4j.test.EntityTestAssembler;
 
 /**
  *
@@ -43,18 +42,18 @@ public class EntityProxyTest extends AbstractQi4jTest
     public void assemble( ModuleAssembly module )
         throws AssemblyException
     {
-        module.addEntities( EntityCompositeWithMutualType.class, MissingMutualTypeEntityComposite.class );
-        module.addTransients( EntityProxyWithMutualType.class, MissingMutualTypeEntityProxy.class );
+        module.entities( EntityCompositeWithMutualType.class, MissingMutualTypeEntityComposite.class );
+        module.transients( EntityProxyWithMutualType.class, MissingMutualTypeEntityProxy.class );
 
         EntityProxyAssembler eAss = new EntityProxyAssembler();
         eAss.assemble( module );
 
-        module.addServices( UuidIdentityGeneratorService.class, MemoryEntityStoreService.class );
+        new EntityTestAssembler().assemble( module );
     }
 
     private <EntityType> EntityType createEntity(Class<EntityType> entityClass) throws ConcurrentEntityModificationException, UnitOfWorkCompletionException
     {
-        UnitOfWork uow = this.unitOfWorkFactory.newUnitOfWork();
+        UnitOfWork uow = module.newUnitOfWork();
         EntityType result = uow.newEntity( entityClass );
         uow.complete();
         return result;
@@ -65,7 +64,7 @@ public class EntityProxyTest extends AbstractQi4jTest
     {
         EntityWithMutualType entity = this.createEntity( EntityCompositeWithMutualType.class );
 
-        UnitOfWork uow = this.unitOfWorkFactory.newUnitOfWork();
+        UnitOfWork uow = module.newUnitOfWork();
         EntityWithMutualType proxy = ((ProxyableEntity)uow.get( entity )).getProxy( EntityWithMutualType.class );
         uow.complete();
 
@@ -77,13 +76,13 @@ public class EntityProxyTest extends AbstractQi4jTest
     {
         EntityWithMutualType entity = this.createEntity( EntityCompositeWithMutualType.class );
 
-        UnitOfWork uow = this.unitOfWorkFactory.newUnitOfWork();
+        UnitOfWork uow = module.newUnitOfWork();
         EntityWithMutualType proxy = ((ProxyableEntity)uow.get( entity )).getProxy( EntityWithMutualType.class );
         uow.complete();
 
         entity = ((EntityProxy)proxy).getEntity( EntityWithMutualType.class );
 
-        uow = this.unitOfWorkFactory.newUnitOfWork();
+        uow = module.newUnitOfWork();
         try
         {
             Assert.assertNotNull( "The proxy must point to existing entity.", uow.get(entity) );
@@ -98,7 +97,7 @@ public class EntityProxyTest extends AbstractQi4jTest
     {
         MissingMutualTypeEntity entity = this.createEntity( MissingMutualTypeEntity.class );
 
-        UnitOfWork uow = this.unitOfWorkFactory.newUnitOfWork();
+        UnitOfWork uow = module.newUnitOfWork();
         try
         {
             MissingMutualTypeEntity proxy = ((ProxyableEntity)uow.get( entity )).getProxy( MissingMutualTypeEntity.class );
@@ -113,13 +112,13 @@ public class EntityProxyTest extends AbstractQi4jTest
     {
         EntityWithMutualType entity = this.createEntity( EntityCompositeWithMutualType.class );
 
-        UnitOfWork uow = this.unitOfWorkFactory.newUnitOfWork();
+        UnitOfWork uow = module.newUnitOfWork();
         EntityWithMutualType proxy = ((ProxyableEntity)uow.get( entity )).getProxy( EntityWithMutualType.class );
         uow.complete();
 
         proxy.setMyString( "TestString" );
 
-        uow = this.unitOfWorkFactory.newUnitOfWork();
+        uow = module.newUnitOfWork();
         try
         {
             Assert.assertEquals( "The change must go down to entity.", "TestString", uow.get( entity ).getMyString() );

@@ -27,22 +27,20 @@ import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 import javax.naming.ldap.LdapName;
+import org.qi4j.api.association.AssociationDescriptor;
 import org.qi4j.api.common.QualifiedName;
+import org.qi4j.api.entity.EntityDescriptor;
 import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.property.PropertyDescriptor;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.usecase.Usecase;
-import org.qi4j.spi.entity.EntityDescriptor;
 import org.qi4j.spi.entity.EntityState;
 import org.qi4j.spi.entity.EntityStatus;
-import org.qi4j.spi.entity.EntityType;
-import org.qi4j.spi.entity.association.AssociationType;
 import org.qi4j.spi.entitystore.EntityNotFoundException;
 import org.qi4j.spi.entitystore.EntityStoreException;
 import org.qi4j.spi.entitystore.EntityStoreUnitOfWork;
 import org.qi4j.spi.entitystore.ReadOnlyEntityStoreException;
 import org.qi4j.spi.entitystore.StateCommitter;
-import org.qi4j.spi.property.PropertyType;
-import org.qi4j.spi.structure.ModuleSPI;
 
 public class JndiUow implements EntityStoreUnitOfWork
 {
@@ -84,7 +82,7 @@ public class JndiUow implements EntityStoreUnitOfWork
         throw new ReadOnlyEntityStoreException( "JndiEntityStore is read-only." );
     }
 
-    public EntityState getEntityState( EntityReference identity )
+    public EntityState entityStateOf( EntityReference identity )
         throws EntityStoreException, EntityNotFoundException
     {
         try
@@ -95,11 +93,10 @@ public class JndiUow implements EntityStoreUnitOfWork
             String version = Long.toString( getVersion( attrs ) );
             long lastModified = getLastModified( attrs );
             EntityStatus status = EntityStatus.LOADED;
-            EntityDescriptor descriptor = ((ModuleSPI) module).entityDescriptor( getType( attrs ) );
-            EntityType entityType = descriptor.entityType();
-            Map<QualifiedName, Object> properties = getProperties( attrs, entityType );
-            Map<QualifiedName, EntityReference> associations = getAssociations( attrs, entityType );
-            Map<QualifiedName, List<EntityReference>> manyAssocations = getManyAssociations( attrs, entityType );
+            EntityDescriptor descriptor = module.entityDescriptor( getType( attrs ) );
+            Map<QualifiedName, Object> properties = getProperties( attrs, descriptor );
+            Map<QualifiedName, EntityReference> associations = getAssociations( attrs, descriptor );
+            Map<QualifiedName, List<EntityReference>> manyAssocations = getManyAssociations( attrs, descriptor );
             return new JndiEntityState( this,
                                         version,
                                         lastModified,
@@ -180,12 +177,11 @@ public class JndiUow implements EntityStoreUnitOfWork
     }
 
 
-    private Map<QualifiedName, Object> getProperties( Attributes attrs, EntityType entityType )
+    private Map<QualifiedName, Object> getProperties( Attributes attrs, EntityDescriptor entityType )
         throws NamingException
     {
         Map<QualifiedName, Object> result = new HashMap<QualifiedName, Object>();
-        Iterable<PropertyType> props = entityType.properties();
-        for( PropertyType property : props )
+        for( PropertyDescriptor property : entityType.state().properties() )
         {
             QualifiedName qualifiedName = property.qualifiedName();
             String propertyName = qualifiedName.name();
@@ -201,29 +197,27 @@ public class JndiUow implements EntityStoreUnitOfWork
         return result;
     }
 
-    private Map<QualifiedName, EntityReference> getAssociations( Attributes attrs, EntityType entityType )
+    private Map<QualifiedName, EntityReference> getAssociations( Attributes attrs, EntityDescriptor entityType )
         throws NamingException
     {
         Map<QualifiedName, EntityReference> result = new HashMap<QualifiedName, EntityReference>();
-        Iterable<AssociationType> assocs = entityType.associations();
-        for( AssociationType associationType : assocs )
+        for( AssociationDescriptor associationType : entityType.state().associations() )
         {
             QualifiedName qualifiedName = associationType.qualifiedName();
             String associationName = qualifiedName.name();
             Attribute attribute = attrs.get( associationName );
             String identity = (String) attribute.get();
-            EntityReference entityReference = EntityReference.getEntityReference( identity );
+            EntityReference entityReference = EntityReference.parseEntityReference( identity );
             result.put( qualifiedName, entityReference );
         }
         return result;
     }
 
-    private Map<QualifiedName, List<EntityReference>> getManyAssociations( Attributes attrs, EntityType entityType )
+    private Map<QualifiedName, List<EntityReference>> getManyAssociations( Attributes attrs, EntityDescriptor entityType )
         throws NamingException
     {
         Map<QualifiedName, List<EntityReference>> result = new HashMap<QualifiedName, List<EntityReference>>();
-        Iterable<AssociationType> assocs = entityType.manyAssociations();
-        for( AssociationType associationType : assocs )
+        for( AssociationDescriptor associationType : entityType.state().manyAssociations() )
         {
             QualifiedName qualifiedName = associationType.qualifiedName();
             String associationName = qualifiedName.name();

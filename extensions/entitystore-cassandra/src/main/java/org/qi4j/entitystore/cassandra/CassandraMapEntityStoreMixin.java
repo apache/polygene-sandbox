@@ -11,10 +11,10 @@ import me.prettyprint.hector.api.query.ColumnQuery;
 import me.prettyprint.hector.api.query.QueryResult;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.io.Input;
-import org.qi4j.api.service.Activatable;
-import org.qi4j.entitystore.map.MapEntityStore;
-import org.qi4j.spi.entity.EntityType;
+import org.qi4j.api.entity.EntityDescriptor;
+import org.qi4j.api.service.ServiceActivation;
+import org.qi4j.io.Input;
+import org.qi4j.spi.entitystore.helpers.MapEntityStore;
 import org.qi4j.spi.entitystore.EntityAlreadyExistsException;
 import org.qi4j.spi.entitystore.EntityNotFoundException;
 import org.qi4j.spi.entitystore.EntityStoreException;
@@ -41,7 +41,7 @@ import static me.prettyprint.hector.api.factory.HFactory.*;
  * @author pvdyck
  * @since 4.0
  */
-public class CassandraMapEntityStoreMixin implements MapEntityStore, Activatable {
+public class CassandraMapEntityStoreMixin implements MapEntityStore, ServiceActivation {
    private static final String COLUMN_NAME = "entry";
    private final Logger logger = LoggerFactory.getLogger(CassandraMapEntityStoreMixin.class);
 
@@ -62,14 +62,14 @@ public class CassandraMapEntityStoreMixin implements MapEntityStore, Activatable
    private
    CassandraConfiguration conf;
 
-   public void activate() throws Exception {
+   public void activateService() throws Exception {
       c = HFactory.getOrCreateCluster("Qi4jCluster", conf.getHost() + ":" + conf.getPort());
       ko = HFactory.createKeyspace(keySpace, c);
       logger.info("started cassandra store");
    }
 
 
-   public void passivate() throws Exception {
+   public void passivateService() throws Exception {
       logger.info("shutting down cassandra");
    }
 
@@ -166,19 +166,18 @@ public class CassandraMapEntityStoreMixin implements MapEntityStore, Activatable
    class MapUpdater implements MapEntityStore.MapChanger {
       me.prettyprint.hector.api.mutation.Mutator m = createMutator(ko);
 
-
-      public Writer newEntity(final EntityReference ref, EntityType entityType) {
+      public Writer newEntity(final EntityReference ref, EntityDescriptor entityDescriptor) {
          checkAbsentBeforeCreate(ref);
          return getWriter(ref);
       }
 
-      public Writer updateEntity(final EntityReference ref, EntityType entityType)
+      public Writer updateEntity(final EntityReference ref, EntityDescriptor entityDescriptor)
             throws IOException {
          checkPresentBeforeUpdate(ref);
          return getWriter(ref);
       }
 
-      public void removeEntity(EntityReference ref, EntityType entityType)
+      public void removeEntity(EntityReference ref, EntityDescriptor entityDescriptor)
             throws EntityNotFoundException {
          checkPresentBeforeDelete(ref);
          m.addDeletion(ref.identity(), cf, COLUMN_NAME, se);

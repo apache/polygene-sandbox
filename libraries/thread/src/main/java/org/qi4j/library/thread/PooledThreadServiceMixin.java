@@ -17,16 +17,15 @@
  */
 package org.qi4j.library.thread;
 
+import java.util.LinkedList;
 import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.This;
-import org.qi4j.api.service.Activatable;
+import org.qi4j.api.service.ServiceActivation;
 import org.qi4j.library.uid.sequence.Sequencing;
 
-import java.util.LinkedList;
-
 public class PooledThreadServiceMixin
-    implements ThreadService, Activatable
+    implements ThreadService, ServiceActivation
 {
     @This private Configuration<ThreadServiceConfiguration> config;
     @Service private Sequencing sequence;
@@ -46,7 +45,7 @@ public class PooledThreadServiceMixin
         {
             if( pool.isEmpty() )
             {
-                Integer max = config.configuration().maxThreads().get();
+                Integer max = config.get().maxThreads().get();
                 if( threadCount >= max )
                 {
                     throw new MaximumThreadsException( max );
@@ -61,14 +60,14 @@ public class PooledThreadServiceMixin
 
     public ThreadServiceConfiguration configuration()
     {
-        return config.configuration();
+        return config.get();
     }
 
-    public void activate()
+    public void activateService()
         throws Exception
     {
         pool = new LinkedList<RunnableThread>();
-        int prefered = config.configuration().preferedNumberOfThreads().get();
+        int prefered = config.get().preferedNumberOfThreads().get();
         for( int i = 0; i < prefered; i++ )
         {
             createNewThread();
@@ -77,7 +76,7 @@ public class PooledThreadServiceMixin
 
     private void createNewThread()
     {
-        ThreadServiceConfiguration configuration = config.configuration();
+        ThreadServiceConfiguration configuration = config.get();
         String tgName = configuration.threadGroupName().get();
         ThreadGroup group = threadGroupService.getThreadGroup( tgName );
         String name = configuration.threadBaseName().get() + "-" + sequence.newSequenceValue();
@@ -89,7 +88,7 @@ public class PooledThreadServiceMixin
         pool.add( runnableThread );
     }
 
-    public void passivate()
+    public void passivateService()
         throws Exception
     {
         for( RunnableThread thread : pool )

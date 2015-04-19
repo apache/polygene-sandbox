@@ -16,6 +16,10 @@
     </dependency>
     <dependency>
       <groupId>org.qi4j.core</groupId>
+      <artifactId>org.qi4j.core.spi</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.qi4j.core</groupId>
       <artifactId>org.qi4j.core.bootstrap</artifactId>
     </dependency>
     <dependency>

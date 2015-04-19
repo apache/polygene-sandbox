@@ -18,17 +18,15 @@
 
 package org.qi4j.entitystore.jndi;
 
+import org.qi4j.api.entity.EntityDescriptor;
 import org.qi4j.spi.entity.EntityState;
 import org.qi4j.spi.entity.EntityStatus;
-import org.qi4j.spi.entity.EntityDescriptor;
-import org.qi4j.spi.entity.ManyAssociationState;
 import org.qi4j.api.entity.EntityReference;
-import org.qi4j.api.common.TypeName;
+import org.qi4j.spi.entity.ManyAssociationState;
 import org.qi4j.api.common.QualifiedName;
 import java.util.Map;
 import java.util.List;
 import java.util.HashMap;
-import org.qi4j.spi.entity.NamedAssociationState;
 
 public class JndiEntityState
     implements EntityState
@@ -102,7 +100,7 @@ public class JndiEntityState
         return status;
     }
 
-    public boolean isOfType( TypeName type )
+    public boolean isAssignableTo( Class<?> type )
     {
         return false;
     }
@@ -112,32 +110,27 @@ public class JndiEntityState
         return entityDescriptor;
     }
 
-    public Object getProperty( QualifiedName stateName )
+    public Object propertyValueOf( QualifiedName stateName )
     {
         return properties.get( stateName );
     }
 
-    public void setProperty( QualifiedName stateName, Object json )
+    public void setPropertyValue( QualifiedName stateName, Object json )
     {
         properties.put( stateName, json );
     }
 
-    public EntityReference getAssociation( QualifiedName stateName )
+    public EntityReference associationValueOf( QualifiedName stateName )
     {
         return associations.get( stateName );
     }
 
-    public void setAssociation( QualifiedName stateName, EntityReference newEntity )
+    public void setAssociationValue( QualifiedName stateName, EntityReference newEntity )
     {
         associations.put( stateName, newEntity );
     }
 
-    public ManyAssociationState getManyAssociation( QualifiedName stateName )
-    {
-        return null;
-    }
-
-    public NamedAssociationState getNamedAssociation( QualifiedName qn )
+    public ManyAssociationState manyAssociationValueOf( QualifiedName stateName )
     {
         return null;
     }

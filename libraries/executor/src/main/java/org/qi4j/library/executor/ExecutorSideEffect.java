@@ -18,13 +18,13 @@ import org.qi4j.api.common.AppliesTo;
 import org.qi4j.api.injection.scope.Invocation;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.sideeffect.GenericSideEffect;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.concurrent.Executor;
+import org.qi4j.api.structure.Module;
 
 /**
  * JAVADOC
@@ -32,7 +32,7 @@ import java.util.concurrent.Executor;
 @AppliesTo( ExecuteSideEffect.class )
 public class ExecutorSideEffect extends GenericSideEffect
 {
-    @Structure ObjectBuilderFactory objectBuilderFactory;
+    @Structure Module module;
     @Service Executor executor;
 
     @Invocation ExecuteSideEffect execute;
@@ -63,7 +63,7 @@ public class ExecutorSideEffect extends GenericSideEffect
             {
                 try
                 {
-                    Object executed = objectBuilderFactory.newObject( execute.value() );
+                    Object executed = module.newObject( execute.value() );
                     runSideEffect( executed );
                 }
                 catch( InvocationTargetException e )

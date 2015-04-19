@@ -17,34 +17,34 @@
 package org.qi4j.entitystore.rmi;
 
 import org.qi4j.api.entity.EntityReference;
-import org.qi4j.api.io.Input;
-import org.qi4j.api.io.Output;
-import org.qi4j.api.service.Activatable;
-import org.qi4j.entitystore.map.MapEntityStore;
+import org.qi4j.io.Input;
+import org.qi4j.io.Output;
 import org.qi4j.spi.entitystore.EntityStoreException;
 
 import java.io.IOException;
 import java.io.Reader;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import org.qi4j.api.service.ServiceActivation;
+import org.qi4j.spi.entitystore.helpers.MapEntityStore;
 
 /**
  * RMI client implementation of Entity
  */
 public class ClientRmiEntityStoreMixin
-    implements Activatable, MapEntityStore
+    implements ServiceActivation, MapEntityStore
 {
     private RemoteEntityStore remote;
 
     // Activatable implementation
-    public void activate()
+    public void activateService()
         throws Exception
     {
         Registry registry = LocateRegistry.getRegistry( "localhost" );
         remote = (RemoteEntityStore) registry.lookup( ServerRmiEntityStoreService.class.getSimpleName() );
     }
 
-    public void passivate()
+    public void passivateService()
         throws Exception
     {
         remote = null;

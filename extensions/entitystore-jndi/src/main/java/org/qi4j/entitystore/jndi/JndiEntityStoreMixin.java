@@ -19,29 +19,29 @@ package org.qi4j.entitystore.jndi;
 
 import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.injection.scope.This;
-import org.qi4j.api.io.Input;
-import org.qi4j.api.io.Output;
+import org.qi4j.io.Input;
+import org.qi4j.io.Output;
 import org.qi4j.api.property.Property;
-import org.qi4j.api.service.Activatable;
 import org.qi4j.api.usecase.Usecase;
 import org.qi4j.spi.entity.EntityState;
 import org.qi4j.spi.entitystore.EntityStore;
 import org.qi4j.spi.entitystore.EntityStoreException;
 import org.qi4j.spi.entitystore.EntityStoreUnitOfWork;
-import org.qi4j.spi.structure.ModuleSPI;
 
 import javax.naming.Context;
 import javax.naming.NamingException;
 import javax.naming.directory.InitialDirContext;
 import java.util.Hashtable;
+import org.qi4j.api.service.ServiceActivation;
+import org.qi4j.api.structure.Module;
 
 public class JndiEntityStoreMixin
-    implements Activatable, EntityStore
+    implements ServiceActivation, EntityStore
 {
     @This private Configuration<JndiConfiguration> configuration;
     private JndiSetup setup;
 
-    public void activate()
+    public void activateService()
         throws Exception
     {
         connect();
@@ -50,7 +50,7 @@ public class JndiEntityStoreMixin
     private void connect()
         throws NamingException
     {
-        JndiConfiguration conf = configuration.configuration();
+        JndiConfiguration conf = configuration.get();
         setup = new JndiSetup();
         setup.instanceVersionAttribute = conf.versionAttribute().get();
         if( setup.instanceVersionAttribute == null )
@@ -102,19 +102,19 @@ public class JndiEntityStoreMixin
         }
     }
 
-    public void passivate()
+    public void passivateService()
         throws Exception
     {
         setup.context.close();
         setup = null;
     }
 
-    public EntityStoreUnitOfWork newUnitOfWork( Usecase usecase, ModuleSPI module, long currentTime )
+    public EntityStoreUnitOfWork newUnitOfWork( Usecase usecase, Module module, long currentTime )
     {
         return new JndiUow( setup, usecase, module, currentTime );
     }
 
-    public Input<EntityState, EntityStoreException> entityStates( ModuleSPI module )
+    public Input<EntityState, EntityStoreException> entityStates( Module module )
     {
         return new Input<EntityState, EntityStoreException>()
         {

@@ -14,26 +14,25 @@
 
 package org.qi4j.library.executor;
 
-import org.qi4j.api.service.Activatable;
-
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
+import org.qi4j.api.service.ServiceActivation;
 
 /**
  * Delegate Runnable's to a ScheduledThreadPoolExecutor
  */
 public class ExecutorMixin
-    implements Executor, Activatable
+    implements Executor, ServiceActivation
 {
     private ExecutorService service;
 
-    public void activate() throws Exception
+    public void activateService() throws Exception
     {
         service = new ScheduledThreadPoolExecutor( 10 );
     }
 
-    public void passivate() throws Exception
+    public void passivateService() throws Exception
     {
         System.out.println( "Shutdown executors" );
         service.shutdown();

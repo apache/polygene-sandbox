@@ -29,11 +29,10 @@ import org.apache.directory.shared.ldap.exception.LdapNameNotFoundException;
 import org.apache.directory.shared.ldap.name.LdapDN;
 import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.injection.scope.This;
-import org.qi4j.api.service.Activatable;
-import org.qi4j.api.service.ServiceComposite;
+import org.qi4j.api.service.ServiceActivation;
 
 public class ApacheDirectoryServiceMixin
-    implements Activatable, Ldap
+    implements ServiceActivation, Ldap
 {
     @This private Configuration<LdapConfiguration> configuration;
 
@@ -48,7 +47,7 @@ public class ApacheDirectoryServiceMixin
         System.out.println( "Starting LDAP." );
     }
 
-    public void activate()
+    public void activateService()
         throws Exception
     {
         // Initialize the LDAP service
@@ -58,7 +57,7 @@ public class ApacheDirectoryServiceMixin
         service.getChangeLog().setEnabled( false );
 
 
-        LdapConfiguration conf = configuration.configuration();
+        LdapConfiguration conf = configuration.get();
         String partitionId = conf.partitionId().get();
         Partition partition = addPartition( partitionId, conf.partitionDn().get() );
 
@@ -87,11 +86,11 @@ public class ApacheDirectoryServiceMixin
 
     private String[] configAttributes()
     {
-        String attrs = configuration.configuration().indexAttributes().get();
+        String attrs = configuration.get().indexAttributes().get();
         return attrs.split( "," );
     }
 
-    public void passivate()
+    public void passivateService()
         throws Exception
     {
         running = false;

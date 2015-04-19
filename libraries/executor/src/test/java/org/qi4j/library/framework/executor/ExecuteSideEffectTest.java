@@ -27,16 +27,16 @@ public class ExecuteSideEffectTest
 
     public void assemble( ModuleAssembly module ) throws AssemblyException
     {
-        module.addTransients( TestComposite.class );
-        module.addObjects( LogCall.class );
-        module.addServices( ExecuteService.class ).instantiateOnStartup();
+        module.transients( TestComposite.class );
+        module.objects( LogCall.class );
+        module.services( ExecuteService.class ).instantiateOnStartup();
     }
 
     @Test
     public void givenMethodWithAnnotationWhenCallThenExecuteSideEffect()
         throws InterruptedException
     {
-        TestComposite instance = transientBuilderFactory.newTransient( TestComposite.class );
+        TestComposite instance = module.newTransient( TestComposite.class );
         System.out.println( instance.doStuff() );
         latch.await();
         assertTrue( "doStuff sideeffect called", LogCall.methodsCalled.contains( "doStuff" ) );
