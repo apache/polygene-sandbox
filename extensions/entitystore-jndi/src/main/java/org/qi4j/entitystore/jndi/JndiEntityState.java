@@ -28,6 +28,7 @@ import org.qi4j.api.common.QualifiedName;
 import java.util.Map;
 import java.util.List;
 import java.util.HashMap;
+import org.qi4j.spi.entity.NamedAssociationState;
 
 public class JndiEntityState
     implements EntityState
@@ -132,6 +133,11 @@ public class JndiEntityState
     }
 
     public ManyAssociationState getManyAssociation( QualifiedName stateName )
+    {
+        return null;
+    }
+
+    public NamedAssociationState getNamedAssociation( QualifiedName qn )
     {
         return null;
     }

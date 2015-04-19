@@ -109,10 +109,10 @@ public class JndiEntityStoreMixin
         setup = null;
     }
 
-   public EntityStoreUnitOfWork newUnitOfWork( Usecase usecase, ModuleSPI module )
-   {
-      return new JndiUow( setup, usecase, module );
-   }
+    public EntityStoreUnitOfWork newUnitOfWork( Usecase usecase, ModuleSPI module, long currentTime )
+    {
+        return new JndiUow( setup, usecase, module, currentTime );
+    }
 
     public Input<EntityState, EntityStoreException> entityStates( ModuleSPI module )
     {

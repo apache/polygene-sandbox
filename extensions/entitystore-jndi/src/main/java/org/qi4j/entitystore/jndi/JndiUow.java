@@ -36,7 +36,6 @@ import org.qi4j.spi.entity.EntityState;
 import org.qi4j.spi.entity.EntityStatus;
 import org.qi4j.spi.entity.EntityType;
 import org.qi4j.spi.entity.association.AssociationType;
-import org.qi4j.spi.entity.association.ManyAssociationType;
 import org.qi4j.spi.entitystore.EntityNotFoundException;
 import org.qi4j.spi.entitystore.EntityStoreException;
 import org.qi4j.spi.entitystore.EntityStoreUnitOfWork;
@@ -54,22 +53,29 @@ public class JndiUow implements EntityStoreUnitOfWork
         RESTRICTED_PROPERTIES.add( "identity" );
     }
 
+    private long currentTime;
     private Usecase usecase;
     private Module module;
     private String uowIdentity;
     private JndiSetup setup;
 
-    public JndiUow( JndiSetup setup, Usecase usecase, Module module )
+    public JndiUow( JndiSetup setup, Usecase usecase, Module module, long currentTime )
     {
         this.setup = setup;
         uowIdentity = UUID.randomUUID().toString();
         this.usecase = usecase;
         this.module = module;
+        this.currentTime = currentTime;
     }
 
     public String identity()
     {
         return uowIdentity;
+    }
+
+    public long currentTime()
+    {
+        return currentTime;
     }
 
     public EntityState newEntityState( EntityReference anIdentity, EntityDescriptor entityDescriptor )
@@ -216,8 +222,8 @@ public class JndiUow implements EntityStoreUnitOfWork
         throws NamingException
     {
         Map<QualifiedName, List<EntityReference>> result = new HashMap<QualifiedName, List<EntityReference>>();
-        Iterable<ManyAssociationType> assocs = entityType.manyAssociations();
-        for( ManyAssociationType associationType : assocs )
+        Iterable<AssociationType> assocs = entityType.manyAssociations();
+        for( AssociationType associationType : assocs )
         {
             QualifiedName qualifiedName = associationType.qualifiedName();
             String associationName = qualifiedName.name();

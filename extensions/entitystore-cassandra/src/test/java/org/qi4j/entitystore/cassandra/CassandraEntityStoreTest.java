@@ -6,7 +6,7 @@ import org.apache.thrift.transport.TTransportException;
 import org.junit.BeforeClass;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
-import org.qi4j.test.entity.AbstractEntityStoreTest;
+import org.qi4j.core.testsupport.AbstractEntityStoreTest;
 
 import java.io.IOException;
 
