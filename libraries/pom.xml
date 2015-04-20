@@ -22,11 +22,5 @@
       <module>thread</module>
       <module>unitofwork</module>
       <module>validation</module>
-
-      <!-- Depends on incubator release of Apache River.
-           Could not find a repository with the correct JARs.
-           Unable to make it compile against Apache River TLP artifacts.
-      <module>jini</module> -->
-
   </modules>
 </project>

@@ -18,20 +18,8 @@
     <module>entitystore-s3</module>
     <module>entitystore-swift</module>
 
-    <!-- Used coherence version not in any public repository.
-         Unable to make it compile against coherence-incubator.
+    <!-- Coherence needs a manual installation
     <module>entitystore-coherence</module> -->
-
-    <!-- See libraries/jini in sandbox
-    <module>entitystore-javaspaces</module> -->
-
-    <!-- Unable to make it compile.
-         Plus `library/osgi` is already part of the SDK since 2.0.
-    <module>osgi</module> -->
-
-    <!-- There are two implementations.
-         See the `gigaspaces_impl` branch of this repository
-    <module>entitstore-gigaspaces/qi4j-entitystore-gs-sample</module> -->
 
   </modules>
 </project>
