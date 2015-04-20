@@ -21,29 +21,29 @@ import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.io.Input;
-import org.qi4j.api.service.Activatable;
-import org.qi4j.entitystore.map.MapEntityStore;
-import org.qi4j.spi.entity.EntityType;
+import org.qi4j.api.service.ServiceActivation;
+import org.qi4j.api.service.ServiceDescriptor;
+import org.qi4j.io.Input;
 import org.qi4j.spi.entitystore.EntityNotFoundException;
 import org.qi4j.spi.entitystore.EntityStoreException;
-import org.qi4j.spi.service.ServiceDescriptor;
+import org.qi4j.spi.entitystore.helpers.MapEntityStore;
 
 import java.io.*;
 import java.util.concurrent.locks.ReadWriteLock;
+import org.qi4j.api.entity.EntityDescriptor;
 
 public class SwiftEntityStoreMixin
-    implements Activatable, MapEntityStore
+    implements ServiceActivation, MapEntityStore
 {
     private @This ReadWriteLock lock;
     @Uses private ServiceDescriptor descriptor;
     @This private Configuration<SwiftConfiguration> configuration;
     private RecordManager recordManager;
 
-    public void activate()
+    public void activateService()
         throws Exception
     {
-        SwiftConfiguration conf = configuration.configuration();
+        SwiftConfiguration conf = configuration.get();
         String storage = conf.storageDirectory().get();
         File storageDir;
         storageDir = new File( storage );
@@ -55,7 +55,7 @@ public class SwiftEntityStoreMixin
         recordManager = new RecordManager( storageDir, recover );
     }
 
-    public void passivate()
+    public void passivateService()
         throws Exception
     {
         recordManager.close();
@@ -97,7 +97,7 @@ public class SwiftEntityStoreMixin
         {
             changes.visitMap( new MapChanger()
             {
-                public Writer newEntity( final EntityReference ref, EntityType entityType ) throws IOException
+                public Writer newEntity( final EntityReference ref, EntityDescriptor entityType ) throws IOException
                 {
                     return new StringWriter( 1000 )
                     {
@@ -112,7 +112,7 @@ public class SwiftEntityStoreMixin
                     };
                 }
 
-                public Writer updateEntity( final EntityReference ref, EntityType entityType ) throws IOException
+                public Writer updateEntity( final EntityReference ref, EntityDescriptor entityType ) throws IOException
                 {
                     return new StringWriter( 1000 )
                     {
@@ -126,7 +126,7 @@ public class SwiftEntityStoreMixin
                     };
                 }
 
-                public void removeEntity( EntityReference ref, EntityType entityType ) throws EntityNotFoundException
+                public void removeEntity( EntityReference ref, EntityDescriptor entityType ) throws EntityNotFoundException
                 {
                     try
                     {

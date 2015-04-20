@@ -19,11 +19,11 @@ package org.qi4j.library.beans.support;
 
 import org.qi4j.api.composite.TransientBuilderFactory;
 import org.qi4j.api.composite.TransientBuilder;
-import org.qi4j.api.entity.association.AssociationInfo;
+import org.qi4j.api.association.AssociationDescriptor;
 
 public class Wrapper
 {
-    static Object wrap( Object resultObject, AssociationInfo info, TransientBuilderFactory cbf )
+    static Object wrap( Object resultObject, AssociationDescriptor info, TransientBuilderFactory cbf )
     {
         Class type = (Class) info.type();
         if( type.isInterface() )

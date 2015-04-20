@@ -3,23 +3,23 @@
   <parent>
     <groupId>org.qi4j.sandbox</groupId>
     <artifactId>qi4j-sandbox</artifactId>
-    <version>1.3-SNAPSHOT</version>
+    <version>0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>sb-extensions-root</artifactId>
-  <version>1.3-SNAPSHOT</version>
+  <artifactId>qi4j-sandbox-extensions</artifactId>
   <name>Qi4j Sandbox Extensions - Build POM</name>
   <packaging>pom</packaging>
 
   <modules>
-    <!--module>entitystore-coherence</module-->
     <module>entitystore-jndi</module>
-    <module>entitystore-javaspaces</module>
+    <module>entitystore-cassandra</module>
     <module>entitystore-jgroups</module>
     <module>entitystore-rmi</module>
     <module>entitystore-s3</module>
     <module>entitystore-swift</module>
-    <module>entitystore-cassandra</module>
+
+    <!-- Coherence needs a manual installation
+    <module>entitystore-coherence</module> -->
 
   </modules>
 </project>

@@ -18,10 +18,10 @@
 
 package org.qi4j.library.ldap.server;
 
-import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.service.ServiceActivation;
 
 @Mixins( ApacheDirectoryServiceMixin.class )
-public interface LdapService extends Ldap, ServiceComposite
+public interface LdapService extends Ldap, ServiceActivation
 {
 }

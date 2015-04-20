@@ -18,14 +18,16 @@
 
 package org.qi4j.entitystore.swift;
 
-import org.qi4j.test.entity.performance.AbstractEntityStorePerformanceTest;
+// import org.qi4j.test.entity.performance.AbstractEntityStorePerformanceTest;
+import org.junit.Ignore;
 import org.qi4j.bootstrap.Assembler;
 
-public class SwiftStorePerformanceTest extends AbstractEntityStorePerformanceTest
+@Ignore( "Needs org.qi4j.test.performance dependency" )
+public class SwiftStorePerformanceTest // extends AbstractEntityStorePerformanceTest
 {
     public SwiftStorePerformanceTest()
     {
-        super( "SwiftEntityStore", createAssembler() );
+        // super( "SwiftEntityStore", createAssembler() );
     }
 
     private static Assembler createAssembler()

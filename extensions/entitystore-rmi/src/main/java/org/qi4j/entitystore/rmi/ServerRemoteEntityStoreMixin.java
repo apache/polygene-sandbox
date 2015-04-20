@@ -24,7 +24,8 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.service.Activatable;
+import org.qi4j.api.service.ServiceActivation;
+import org.qi4j.api.service.ServiceDescriptor;
 import org.qi4j.api.service.ServiceReference;
 import org.qi4j.api.structure.Module;
 import org.qi4j.library.locking.WriteLock;
@@ -33,13 +34,12 @@ import org.qi4j.spi.entity.EntityState;
 import org.qi4j.spi.entity.QualifiedIdentity;
 import org.qi4j.spi.entitystore.EntityStore;
 import org.qi4j.spi.entitystore.EntityStoreException;
-import org.qi4j.spi.service.ServiceDescriptor;
 
 /**
  * RMI server implementation of EntityStore
  */
 public class ServerRemoteEntityStoreMixin
-    implements RemoteEntityStore, Activatable
+    implements RemoteEntityStore, ServiceActivation
 {
     @Uses
     private ServiceDescriptor descriptor;
@@ -63,14 +63,14 @@ public class ServerRemoteEntityStoreMixin
     private ServiceReference<Registry> registry;
 
     // Activatable implementation
-    public void activate()
+    public void activateService()
         throws Exception
     {
         RemoteEntityStore stub = (RemoteEntityStore) UnicastRemoteObject.exportObject( remote, 0 );
         registry.get().bind( descriptor.identity(), stub );
     }
 
-    public void passivate()
+    public void passivateService()
         throws Exception
     {
         if( registry.isActive() )

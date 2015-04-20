@@ -18,28 +18,29 @@
 package org.qi4j.library.thread;
 
 import org.junit.Assert;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+
 import org.junit.Test;
-import org.qi4j.api.composite.Composite;
 import org.qi4j.api.composite.TransientComposite;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
-import org.qi4j.entitystore.memory.MemoryEntityStoreService;
 import org.qi4j.library.thread.assembly.PooledThreadServiceAssembler;
 import org.qi4j.test.AbstractQi4jTest;
 
 import java.util.ArrayList;
+import org.qi4j.test.EntityTestAssembler;
 
 public class PooledThreadServiceTest extends AbstractQi4jTest
 {
     public void assemble( ModuleAssembly module )
         throws AssemblyException
     {
-        module.addTransients( UnderTestComposite.class );
-        module.addServices( MemoryEntityStoreService.class );
+        module.transients( UnderTestComposite.class );
+        new EntityTestAssembler().assemble( module );
         new PooledThreadServiceAssembler().assemble( module );
     }
 
@@ -47,7 +48,7 @@ public class PooledThreadServiceTest extends AbstractQi4jTest
     public void whenUsingPooledThreadProviderThenSameThreadsAreHandedBack()
         throws Exception
     {
-        UnderTest underTest = transientBuilderFactory.newTransient( UnderTest.class );
+        UnderTest underTest = module.newTransient( UnderTest.class );
         ArrayList<Thread> threads = new ArrayList<Thread>();
         int poolsize = underTest.maxThreads();
         TestRunnable r1 = new TestRunnable();

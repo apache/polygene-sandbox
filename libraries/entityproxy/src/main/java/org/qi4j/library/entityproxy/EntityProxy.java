@@ -20,10 +20,10 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Immutable;
 import org.qi4j.api.property.Property;
-import org.qi4j.api.unitofwork.UnitOfWorkConcern;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.unitofwork.UnitOfWorkPropagation;
-import org.qi4j.api.unitofwork.UnitOfWorkPropagation.Propagation;
+import org.qi4j.api.unitofwork.concern.UnitOfWorkConcern;
+import org.qi4j.api.unitofwork.concern.UnitOfWorkPropagation;
+import org.qi4j.api.unitofwork.concern.UnitOfWorkPropagation.Propagation;
 
 @Mixins({
     EntityProxy.EntityProxyMixin.class

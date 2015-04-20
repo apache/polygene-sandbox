@@ -34,12 +34,12 @@ public class NewThreadServiceMixin
     {
         synchronized( this )
         {
-            Integer max = config.configuration().maxThreads().get();
+            Integer max = config.get().maxThreads().get();
             if( threadCount >= max )
             {
                 throw new MaximumThreadsException( max );
             }
-            ThreadServiceConfiguration configuration = config.configuration();
+            ThreadServiceConfiguration configuration = config.get();
             String name = configuration.threadBaseName().get() + sequence.newSequenceValue();
             String tgName = configuration.threadGroupName().get();
             ThreadGroup threadGroup = threadGroupService.getThreadGroup( tgName );
@@ -49,7 +49,7 @@ public class NewThreadServiceMixin
 
     public ThreadServiceConfiguration configuration()
     {
-        return config.configuration();
+        return config.get();
     }
 
     public class RunnableWrapper

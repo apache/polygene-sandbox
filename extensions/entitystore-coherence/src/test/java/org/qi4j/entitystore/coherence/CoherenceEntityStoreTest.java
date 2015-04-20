@@ -36,7 +36,7 @@ public class CoherenceEntityStoreTest extends AbstractEntityStoreTest
         super.assemble( module );
         module.addServices( CoherenceEntityStoreService.class, UuidIdentityGeneratorService.class );
 
-        ModuleAssembly config = module.layerAssembly().moduleAssembly( "config" );
+        ModuleAssembly config = module.layer().module( "config" );
         config.addEntities( CoherenceConfiguration.class ).visibleIn( Visibility.layer );
         config.addServices( MemoryEntityStoreService.class );
     }

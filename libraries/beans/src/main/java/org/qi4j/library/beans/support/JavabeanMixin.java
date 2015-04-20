@@ -18,57 +18,64 @@
 
 package org.qi4j.library.beans.support;
 
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import org.qi4j.api.Qi4j;
 import org.qi4j.api.common.AppliesTo;
 import org.qi4j.api.common.AppliesToFilter;
 import org.qi4j.api.composite.Composite;
 import org.qi4j.api.composite.TransientBuilderFactory;
-import org.qi4j.api.entity.association.Association;
-import org.qi4j.api.entity.association.ManyAssociation;
+import org.qi4j.api.association.Association;
+import org.qi4j.api.association.AssociationDescriptor;
+import org.qi4j.api.association.AssociationStateDescriptor;
+import org.qi4j.api.association.ManyAssociation;
+import org.qi4j.api.composite.CompositeDescriptor;
+import org.qi4j.api.composite.StateDescriptor;
+import org.qi4j.api.composite.StatefulCompositeDescriptor;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.property.Property;
-import org.qi4j.spi.util.MethodKeyMap;
+import org.qi4j.api.property.PropertyDescriptor;
+import org.qi4j.api.structure.Module;
 
 @AppliesTo( { JavabeanMixin.JavabeanSupportFilter.class } )
 public class JavabeanMixin
     implements JavabeanSupport, InvocationHandler
 {
-    private HashMap<Method, Object> handlers;
+    private HashMap<AccessibleObject, Object> handlers;
 
     @Structure TransientBuilderFactory cbf;
     Object pojo;
 
-    public JavabeanMixin( @This Composite thisComposite, @Uses Object pojo )
+    public JavabeanMixin( @Structure Module module, @This Composite thisComposite, @Uses Object pojo )
     {
         this.pojo = pojo;
-        handlers = new MethodKeyMap<Object>();
-        Class<? extends Composite> type = thisComposite.type();
-        for( Method method : type.getMethods() )
+        this.handlers = new HashMap<AccessibleObject, Object>();
+        CompositeDescriptor thisDescriptor = Qi4j.FUNCTION_DESCRIPTOR_FOR.map( thisComposite );
+        if( thisDescriptor instanceof StatefulCompositeDescriptor )
         {
-            Class<?> returnType = method.getReturnType();
-            if( Property.class.isAssignableFrom( returnType ) )
+            StateDescriptor stateDescriptor = ( (StatefulCompositeDescriptor) thisDescriptor ).state();
+            for( PropertyDescriptor propDesc : stateDescriptor.properties() )
             {
-                JavabeanProperty prop = new JavabeanProperty( this, method );
-                Method pojoMethod = findMethod( pojo, prop.qualifiedName().name() );
-                prop.setPojoMethod( pojoMethod );
-                handlers.put( method, prop );
+                Method pojoMethod = findMethod( pojo, propDesc.qualifiedName().name() );
+                handlers.put( propDesc.accessor(), new JavabeanProperty( this, propDesc, pojoMethod ) );
             }
-            else if( ManyAssociation.class.isAssignableFrom( returnType ) )
+            if( stateDescriptor instanceof AssociationStateDescriptor )
             {
-                JavabeanManyAssociation association = new JavabeanManyAssociation( this, method );
-                Method pojoMethod = findMethod( pojo, association.qualifiedName().name() );
-                association.setPojoMethod( pojoMethod );
-                handlers.put( method, association );
-            }
-            else if( Association.class.isAssignableFrom( returnType ) )
-            {
-                JavabeanAssociation association = new JavabeanAssociation( this, method );
-                association.pojoMethod = findMethod( pojo, association.qualifiedName().name() );
-                handlers.put( method, association );
+                AssociationStateDescriptor assocStateDesc = (AssociationStateDescriptor) stateDescriptor;
+                for( AssociationDescriptor assocDesc : assocStateDesc.associations() )
+                {
+                    Method pojoMethod = findMethod( pojo, assocDesc.qualifiedName().name() );
+                    handlers.put( assocDesc.accessor(), new JavabeanAssociation( this, assocDesc, pojoMethod ) );
+                }
+                for( AssociationDescriptor assocDesc : assocStateDesc.manyAssociations() )
+                {
+                    Method pojoMethod = findMethod( pojo, assocDesc.qualifiedName().name() );
+                    handlers.put( assocDesc.accessor(), new JavabeanManyAssociation( this, assocDesc, pojoMethod ) );
+                }
             }
         }
     }

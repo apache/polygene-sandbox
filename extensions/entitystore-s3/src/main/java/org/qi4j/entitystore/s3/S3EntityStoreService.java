@@ -17,8 +17,7 @@
 package org.qi4j.entitystore.s3;
 
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.service.Activatable;
-import org.qi4j.api.service.ServiceComposite;
+import org.qi4j.api.service.ServiceActivation;
 import org.qi4j.library.locking.LockingAbstractComposite;
 import org.qi4j.spi.entitystore.EntityStore;
 
@@ -28,7 +27,7 @@ import org.qi4j.spi.entitystore.EntityStore;
 
 @Mixins( { S3SerializationStoreMixin.class } )
 public interface S3EntityStoreService
-    extends EntityStore, ServiceComposite, Activatable, LockingAbstractComposite
+    extends EntityStore, ServiceActivation, LockingAbstractComposite
 
 {
 }

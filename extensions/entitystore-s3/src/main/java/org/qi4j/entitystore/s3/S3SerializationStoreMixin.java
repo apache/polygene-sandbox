@@ -23,14 +23,14 @@ import org.jets3t.service.security.AWSCredentials;
 import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.This;
-import org.qi4j.api.io.Input;
-import org.qi4j.api.io.Output;
-import org.qi4j.api.service.Activatable;
-import org.qi4j.entitystore.map.MapEntityStore;
+import org.qi4j.io.Input;
+import org.qi4j.io.Output;
 import org.qi4j.spi.entitystore.EntityStoreException;
 
 import java.io.IOException;
 import java.io.Reader;
+import org.qi4j.api.service.ServiceActivation;
+import org.qi4j.spi.entitystore.helpers.MapEntityStore;
 
 /**
  * Amazon S3 implementation of SerializationStore.
@@ -38,7 +38,7 @@ import java.io.Reader;
  * To use this you must supply your own access key and secret key for your Amazon S3 account.
  */
 public class S3SerializationStoreMixin
-    implements Activatable, MapEntityStore
+    implements ServiceActivation, MapEntityStore
 {
 
     @This
@@ -48,11 +48,11 @@ public class S3SerializationStoreMixin
     private S3Bucket entityBucket;
 
     // Activatable implementation
-    public void activate()
+    public void activateService()
         throws Exception
     {
-        String awsAccessKey = configuration.configuration().accessKey().get();
-        String awsSecretKey = configuration.configuration().secretKey().get();
+        String awsAccessKey = configuration.get().accessKey().get();
+        String awsSecretKey = configuration.get().secretKey().get();
 
         if( awsAccessKey == null || awsSecretKey == null )
         {
@@ -77,7 +77,7 @@ public class S3SerializationStoreMixin
         }
     }
 
-    public void passivate()
+    public void passivateService()
         throws Exception
     {
     }
@@ -92,9 +92,11 @@ public class S3SerializationStoreMixin
     {
         return new Input<Reader, IOException>()
         {
-            public <ReceiverThrowableType extends Throwable> void transferTo( Output<Reader, ReceiverThrowableType> readerReceiverThrowableTypeOutput ) throws IOException, ReceiverThrowableType
+            public <ReceiverThrowableType extends Throwable> void transferTo( Output<? super Reader, ReceiverThrowableType> output )
+                throws IOException, ReceiverThrowableType
             {
                 // TODO Implement this
+                throw new UnsupportedOperationException( "Not supported yet." );
             }
         };
     }

@@ -17,8 +17,7 @@
 package org.qi4j.entitystore.rmi;
 
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.service.Activatable;
-import org.qi4j.api.service.ServiceComposite;
+import org.qi4j.api.service.ServiceActivation;
 import org.qi4j.library.locking.LockingAbstractComposite;
 
 /**
@@ -27,6 +26,6 @@ import org.qi4j.library.locking.LockingAbstractComposite;
 
 @Mixins( { ServerRemoteEntityStoreMixin.class } )
 public interface ServerRmiEntityStoreService
-    extends ServiceComposite, Activatable, LockingAbstractComposite
+    extends ServiceActivation, LockingAbstractComposite
 {
 }

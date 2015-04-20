@@ -37,8 +37,8 @@ public class JndiEntityStoreAssembler
     public void assemble( ModuleAssembly module ) throws AssemblyException
     {
         module.addServices( JndiEntityStoreService.class, UuidIdentityGeneratorService.class );
-        ModuleAssembly config = module.layerAssembly().moduleAssembly( configurationModuleName );
-        config.addEntities( JndiConfiguration.class ).visibleIn( Visibility.layer );
-        config.addServices( MemoryEntityStoreService.class );
+        ModuleAssembly config = module.layer().module( configurationModuleName );
+        config.entities( JndiConfiguration.class ).visibleIn( Visibility.layer );
+        config.services( MemoryEntityStoreService.class );
     }
 }

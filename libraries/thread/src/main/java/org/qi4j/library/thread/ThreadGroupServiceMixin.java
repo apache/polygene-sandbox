@@ -31,7 +31,7 @@ public class ThreadGroupServiceMixin
 
     public ThreadGroupServiceMixin( @This Configuration<ThreadGroupConfiguration> config )
     {
-        ThreadGroupConfiguration configuration = config.configuration();
+        ThreadGroupConfiguration configuration = config.get();
         Property<String> rootName = configuration.rootGroupName();
         String name = rootName.get();
         groups = new HashMap<String, ThreadGroup>();

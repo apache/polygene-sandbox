@@ -34,6 +34,10 @@ import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.io.Input;
+import org.qi4j.api.io.Output;
+import org.qi4j.api.io.Receiver;
+import org.qi4j.api.io.Sender;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.entitystore.map.MapEntityStore;
 import org.qi4j.spi.entity.EntityType;
@@ -155,23 +159,31 @@ public class CoherenceEntityStoreMixin
         }
     }
 
-    public void visitMap( MapEntityStoreVisitor visitor )
+    public Input<Reader, IOException> entityStates()
     {
-        Iterator<Map.Entry<String, byte[]>> list = cache.entrySet().iterator();
-        while( list.hasNext() )
+        return new Input<Reader, IOException>()
         {
-            Map.Entry<String, byte[]> entry = list.next();
-            String id = entry.getKey();
-            byte[] data = entry.getValue();
-            try
+            public <ReceiverThrowableType extends Throwable> void transferTo( Output<? super Reader, ReceiverThrowableType> output )
+                throws IOException, ReceiverThrowableType
             {
-                visitor.visitEntity( new StringReader( new String( data, "UTF-8" ) ) );
+                output.receiveFrom(
+                    new Sender<Reader, IOException>()
+                    {
+                        public <ReceiverThrowableType extends Throwable> void sendTo( Receiver<? super Reader, ReceiverThrowableType> receiver )
+                        throws ReceiverThrowableType, IOException
+                        {
+                            Iterator<Map.Entry<String, byte[]>> list = cache.entrySet().iterator();
+                            while( list.hasNext() )
+                            {
+                                Map.Entry<String, byte[]> entry = list.next();
+                                byte[] data = entry.getValue();
+                                receiver.receive( new StringReader( new String( data, "UTF-8" ) ) );
+                            }
+                        }
+                    }
+                );
             }
-            catch( UnsupportedEncodingException e )
-            {
-                // Can not happen!
-            }
-        }
+        };
     }
 
     public void exportTo( Writer out )

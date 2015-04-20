@@ -30,8 +30,8 @@ public class LdapServerTest
     public void assemble( ModuleAssembly module )
         throws AssemblyException
     {
-        module.addServices( LdapService.class ).instantiateOnStartup();
-        module.addEntities( LdapConfiguration.class );
+        module.services( LdapService.class ).instantiateOnStartup();
+        module.entities( LdapConfiguration.class );
     }
 
     @Test

@@ -31,10 +31,10 @@ public class NewThreadServiceAssembler
 {
     public void assemble( ModuleAssembly module ) throws AssemblyException
     {
-        module.addServices( NewThreadServiceComposite.class );
-        module.addServices( ThreadGroupServiceComposite.class );
-        module.addEntities( ThreadServiceConfigurationEntity.class );
-        module.addEntities( ThreadGroupConfigurationEntity.class );
+        module.services( NewThreadServiceComposite.class );
+        module.services( ThreadGroupServiceComposite.class );
+        module.entities( ThreadServiceConfigurationEntity.class );
+        module.entities( ThreadGroupConfigurationEntity.class );
         new TransientSequencingAssembler().assemble( module );
     }
 }

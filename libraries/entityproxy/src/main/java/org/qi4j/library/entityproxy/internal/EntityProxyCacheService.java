@@ -17,7 +17,7 @@ package org.qi4j.library.entityproxy.internal;
 import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.ServiceComposite;
-import org.qi4j.api.unitofwork.UnitOfWorkConcern;
+import org.qi4j.api.unitofwork.concern.UnitOfWorkConcern;
 
 @Mixins({
    EntityProxyCache.EntityProxyUtilsMixin.class

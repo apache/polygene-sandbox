@@ -69,7 +69,7 @@ public interface ProxyableEntity
       Class<?> commonClass = this.doGetCommonType(proxyClass);
       if (commonClass == null)
       {
-         throw new NoCommonClassFoundException("Did not find common class for entity of type: " + this._meAsEntityComposite.type() + " [proxyClass: " + proxyClass.getName() + "].");
+         throw new NoCommonClassFoundException("Did not find common class for entity of type: " + this._meAsEntityComposite.getClass().getName() + " [proxyClass: " + proxyClass.getName() + "].");
       }
       state.commonClass().set(commonClass);
       state.entityID().set(this._meAsEntityComposite.identity().get());

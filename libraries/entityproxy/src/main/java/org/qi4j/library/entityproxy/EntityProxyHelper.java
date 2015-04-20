@@ -18,10 +18,10 @@ import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.ServiceComposite;
-import org.qi4j.api.unitofwork.UnitOfWorkConcern;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.unitofwork.UnitOfWorkPropagation;
-import org.qi4j.api.unitofwork.UnitOfWorkPropagation.Propagation;
+import org.qi4j.api.unitofwork.concern.UnitOfWorkConcern;
+import org.qi4j.api.unitofwork.concern.UnitOfWorkPropagation;
+import org.qi4j.api.unitofwork.concern.UnitOfWorkPropagation.Propagation;
 
 /**
  *

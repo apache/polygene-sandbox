@@ -38,7 +38,7 @@ public class CoherenceEntityStoreAssembler
         throws AssemblyException
     {
         module.addServices( CoherenceEntityStoreService.class, UuidIdentityGeneratorService.class );
-        ModuleAssembly config = module.layerAssembly().moduleAssembly( configurationModule );
+        ModuleAssembly config = module.layer().module( configurationModule );
         config.addEntities( CoherenceConfiguration.class ).visibleIn( Visibility.layer );
         config.addServices( MemoryEntityStoreService.class );
     }

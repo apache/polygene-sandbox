@@ -17,7 +17,6 @@ import static junit.framework.Assert.assertFalse;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
-import org.qi4j.api.composite.Composite;
 import org.qi4j.api.composite.TransientBuilder;
 import org.qi4j.api.composite.TransientComposite;
 import org.qi4j.api.mixin.Mixins;
@@ -33,7 +32,7 @@ public class PropertiesMixinTest extends AbstractQi4jTest
 
     public void assemble( ModuleAssembly aModule ) throws AssemblyException
     {
-        aModule.addTransients( SampleJavaBeanComposite.class );
+        aModule.transients( SampleJavaBeanComposite.class );
     }
 
     @Override
@@ -41,7 +40,7 @@ public class PropertiesMixinTest extends AbstractQi4jTest
     public void setUp() throws Exception
     {
         super.setUp();
-        TransientBuilder<SampleJavaBeanComposite> builder = transientBuilderFactory.newTransientBuilder( SampleJavaBeanComposite.class );
+        TransientBuilder<SampleJavaBeanComposite> builder = module.newTransientBuilder( SampleJavaBeanComposite.class );
         m_proxy = builder.newInstance();
     }
 

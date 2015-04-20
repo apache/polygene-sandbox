@@ -19,13 +19,12 @@ package org.qi4j.entitystore.jgroups;
 
 import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.service.Activatable;
-import org.qi4j.api.service.ServiceComposite;
-import org.qi4j.entitystore.map.MapEntityStoreMixin;
+import org.qi4j.api.service.ServiceActivation;
 import org.qi4j.library.locking.LockingAbstractComposite;
 import org.qi4j.spi.entitystore.ConcurrentModificationCheckConcern;
 import org.qi4j.spi.entitystore.EntityStore;
 import org.qi4j.spi.entitystore.StateChangeNotificationConcern;
+import org.qi4j.spi.entitystore.helpers.MapEntityStoreMixin;
 
 /**
  * EntityStore service backed by JGroups store.
@@ -34,7 +33,7 @@ import org.qi4j.spi.entitystore.StateChangeNotificationConcern;
 @Concerns({ StateChangeNotificationConcern.class, ConcurrentModificationCheckConcern.class})
 @Mixins({ MapEntityStoreMixin.class, JGroupsEntityStoreMixin.class})
 public interface JGroupsEntityStoreService
-    extends EntityStore, ServiceComposite, Activatable, LockingAbstractComposite
+    extends EntityStore, ServiceActivation, LockingAbstractComposite
 
 {
 }

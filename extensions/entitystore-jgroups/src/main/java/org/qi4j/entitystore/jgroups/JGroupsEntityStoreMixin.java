@@ -20,28 +20,28 @@ package org.qi4j.entitystore.jgroups;
 import org.jgroups.JChannel;
 import org.jgroups.blocks.ReplicatedHashMap;
 import org.qi4j.api.entity.EntityReference;
-import org.qi4j.api.io.Input;
-import org.qi4j.api.io.Output;
-import org.qi4j.api.io.Receiver;
-import org.qi4j.api.io.Sender;
-import org.qi4j.api.service.Activatable;
-import org.qi4j.entitystore.map.MapEntityStore;
-import org.qi4j.spi.entity.EntityType;
+import org.qi4j.io.Input;
+import org.qi4j.io.Output;
+import org.qi4j.io.Receiver;
+import org.qi4j.io.Sender;
 import org.qi4j.spi.entitystore.EntityNotFoundException;
 import org.qi4j.spi.entitystore.EntityStoreException;
 
 import java.io.*;
+import org.qi4j.api.entity.EntityDescriptor;
+import org.qi4j.api.service.ServiceActivation;
+import org.qi4j.spi.entitystore.helpers.MapEntityStore;
 
 /**
  * JGroups implementation of EntityStore
  */
 public class JGroupsEntityStoreMixin
-        implements Activatable, MapEntityStore
+        implements ServiceActivation, MapEntityStore
 {
     private JChannel channel;
     private ReplicatedHashMap<String, String> replicatedMap;
 
-    public void activate() throws Exception
+    public void activateService() throws Exception
     {
         channel = new JChannel();
         channel.connect( "entitystore" );
@@ -49,7 +49,7 @@ public class JGroupsEntityStoreMixin
         replicatedMap.setBlockingUpdates( true );
     }
 
-    public void passivate() throws Exception
+    public void passivateService() throws Exception
     {
         channel.close();
     }
@@ -76,18 +76,22 @@ public class JGroupsEntityStoreMixin
     {
         return new Input<Reader, IOException>()
         {
-            public <ReceiverThrowableType extends Throwable> void transferTo( Output<Reader, ReceiverThrowableType> output ) throws IOException, ReceiverThrowableType
+            public <ReceiverThrowableType extends Throwable> void transferTo( Output<? super Reader, ReceiverThrowableType> output )
+                throws IOException, ReceiverThrowableType
             {
-                output.receiveFrom( new Sender<Reader, IOException>()
-                {
-                    public <ReceiverThrowableType extends Throwable> void sendTo( Receiver<Reader, ReceiverThrowableType> receiver ) throws ReceiverThrowableType, IOException
+                output.receiveFrom(
+                    new Sender<Reader, IOException>()
                     {
-                        for (String json : replicatedMap.values())
+                        public <ReceiverThrowableType extends Throwable> void sendTo( Receiver<? super Reader, ReceiverThrowableType> receiver )
+                        throws ReceiverThrowableType, IOException
                         {
-                            receiver.receive( new StringReader(json) );
+                            for( String json : replicatedMap.values() )
+                            {
+                                receiver.receive( new StringReader( json ) );
+                            }
                         }
                     }
-                } );
+                );
             }
         };
     }
@@ -98,7 +102,7 @@ public class JGroupsEntityStoreMixin
         {
             changes.visitMap( new MapChanger()
             {
-                public Writer newEntity( final EntityReference ref, EntityType entityType ) throws IOException
+                public Writer newEntity( final EntityReference ref, EntityDescriptor entityDescriptor ) throws IOException
                 {
                     return new StringWriter( 1000 )
                     {
@@ -113,7 +117,7 @@ public class JGroupsEntityStoreMixin
                     };
                 }
 
-                public Writer updateEntity( final EntityReference ref, EntityType entityType ) throws IOException
+                public Writer updateEntity( final EntityReference ref, EntityDescriptor entityDescriptor ) throws IOException
                 {
                     return new StringWriter( 1000 )
                     {
@@ -128,7 +132,7 @@ public class JGroupsEntityStoreMixin
                     };
                 }
 
-                public void removeEntity( EntityReference ref, EntityType entityType ) throws EntityNotFoundException
+                public void removeEntity( EntityReference ref, EntityDescriptor entityDescriptor ) throws EntityNotFoundException
                 {
                     replicatedMap.remove( ref.identity() );
                 }
